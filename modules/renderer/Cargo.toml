@@ -19,4 +19,3 @@ oneshot = "0.1.5"
 rand = "0.8.5"
 getrandom = { version = "0.2.9", features = ["js"] }
 js-sys = "0.3.62"
-scopeguard = "1.1.0"

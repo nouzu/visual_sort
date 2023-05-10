@@ -276,186 +276,77 @@ pub fn shuffle() {
     state.render_array();
 }
 
-struct RenderLoop {
-    animation_id: Option<i32>,
-    closure: Option<Closure<dyn FnMut()>>,
-}
+async fn request_animation_frame() {
+    let (s, r) = oneshot::channel();
 
-impl RenderLoop {
-    fn new() -> Self {
-        Self { animation_id: None, closure: None }
-    }
-}
+    let closure = Closure::once(move || s.send(()).unwrap());
 
-macro_rules! animation {
-    ($constructor:expr, $animation:ident, $state:ident, $speed:ident, $end:ident, $block:block) => {
-        let (sx, rx) = oneshot::channel();
-        let animation = Rc::new(RefCell::new($constructor));
-        {
-            let closure: Closure<dyn FnMut()> = {
-                let mut sx = Some(sx);
-                let animation = animation.clone();
-                Closure::wrap(Box::new(move || {
-                    let mut $animation = animation.borrow_mut();
-                    let $state = unsafe { STATE.as_mut().unwrap() };
-                    let mut $end = || {
-                        if let Some(sx) = sx.take() {
-                            sx.send(()).unwrap();
-                        }
-                    };
-                    for _ in 0..$speed {
-                        $block;
-                    }
-                    $state.render_array();
-                    $animation.render_loop.animation_id = if let Some(ref closure) = $animation.render_loop.closure {
-                        Some(web_sys::window().unwrap().request_animation_frame(closure.as_ref().unchecked_ref()).unwrap())
-                    } else {
-                        None
-                    }
-                }))
-            };
-            let mut animation = animation.borrow_mut();
-            animation.render_loop.animation_id = Some(web_sys::window().unwrap().request_animation_frame(closure.as_ref().unchecked_ref()).unwrap());
-            animation.render_loop.closure = Some(closure);
-        }
-        rx.await.unwrap();
-    };
+    web_sys::window().unwrap()
+        .request_animation_frame(closure.as_ref().unchecked_ref()).unwrap();
+
+    r.await.unwrap();
 }
 
 #[wasm_bindgen]
 pub async fn bubble_sort(speed: u16) {
-    struct BubbleSort {
-        render_loop: RenderLoop,
-        cycle: usize,
-        swaps: usize,
-        index: usize,
-    }
+    let state = unsafe { STATE.as_mut().unwrap() };
 
-    impl BubbleSort {
-        fn new() -> Self {
-            BubbleSort { render_loop: RenderLoop::new(), cycle: 0, swaps: 0, index: 1 }
-        }
-    }
+    let mut mods = 0;
 
-    animation!(BubbleSort::new(), animation, state, speed, end, {
-        if animation.cycle == state.array.len() {
-            end();
-            state.render_array();
-            return;
-        }
+    for i in 0..state.array.len() - 1 {
+        for j in 0..state.array.len() - i - 1 {
+            if state.array[j] > state.array[j + 1] {
+                state.array.swap(j, j + 1);
 
-        if animation.index == state.array.len() {
-            if animation.swaps == 0 {
-                end();
-                state.render_array();
-                return;
+                mods += 1;
+
+                if mods == speed {
+                    mods = 0;
+
+                    request_animation_frame().await;
+
+                    state.render_array();
+                }
             }
-
-            animation.cycle += 1;
-            animation.index = 1;
-        }
-
-        if state.array[animation.index - 1] > state.array[animation.index] {
-            state.array.swap(animation.index - 1, animation.index);
-
-            animation.swaps += 1;
-        }
-
-        animation.index += 1;
-    });
-}
-
-#[wasm_bindgen]
-pub async fn bi_bubble_sort(speed: u16) {
-    struct BiBubbleSort {
-        render_loop: RenderLoop,
-        cycle: usize,
-        swaps: usize,
-        index: [usize; 2],
-    }
-
-    impl BiBubbleSort {
-        fn new() -> Self {
-            Self { render_loop: RenderLoop::new(), cycle: 0, swaps: 0, index: [0, 799] }
         }
     }
 
-    let speed = speed / 2;
+    request_animation_frame().await;
 
-    animation!(BiBubbleSort::new(), animation, state, speed, end, {
-        if animation.cycle == state.array.len() {
-            end();
-            state.render_array();
-            return;
-        }
-
-        if animation.index[0] == state.array.len() - 1 || animation.index[1] == 1 {
-            if animation.swaps == 0 {
-                end();
-                state.render_array();
-                return;
-            }
-
-            animation.cycle += 1;
-            animation.index = [0, state.array.len() - 1];
-        }
-
-        let index = animation.index[0];
-
-        if state.array[index] > state.array[index + 1] {
-            state.array.swap(index, index + 1);
-
-            animation.swaps += 1;
-        }
-
-        animation.index[0] += 1;
-
-        let index = animation.index[1];
-
-        if state.array[index] < state.array[index - 1] {
-            state.array.swap(index, index - 1);
-
-            animation.swaps += 1;
-        }
-
-        animation.index[1] -= 1;
-    });
+    state.render_array();
 }
 
 #[wasm_bindgen]
 pub async fn insertion_sort(speed: u16) {
-    struct InsertionSort {
-        render_loop: RenderLoop,
-        i: usize,
-        j: usize,
-        f: bool,
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    let mut i = 1;
+
+    while i < state.array.len() {
+        let mut j = i;
+
+        while j > 0 && state.array[j - 1] > state.array[j] {
+            state.array.swap(j, j - 1);
+
+            j -= 1;
+
+            mods += 1;
+
+            if mods == speed {
+                mods = 0;
+
+                request_animation_frame().await;
+
+                state.render_array();
+            }
+        }
+
+        i += 1;
     }
 
-    impl InsertionSort {
-        fn new() -> Self {
-            Self { render_loop: RenderLoop::new(), i: 1, j: 0, f: true }
-        }
-    }
+    request_animation_frame().await;
 
-    animation!(InsertionSort::new(), animation, state, speed, end, {
-        if animation.i < state.array.len() {
-            if animation.f {
-                animation.j = animation.i;
-                animation.f = false;
-            }
-
-            if animation.j > 0 && state.array[animation.j - 1] > state.array[animation.j] {
-                state.array.swap(animation.j, animation.j - 1);
-
-                animation.j -= 1;
-            } else {
-                animation.i += 1;
-                animation.f = true;
-            }
-        } else {
-            end();
-            state.render_array();
-            return;
-        }
-    });
+    state.render_array();
 }
