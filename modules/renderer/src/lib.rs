@@ -1,8 +1,5 @@
 #![feature(thread_local)]
 
-use std::cell::RefCell;
-use std::cmp::min;
-use std::rc::Rc;
 use rand::prelude::SliceRandom;
 use rand::thread_rng;
 use winit::event_loop::EventLoop;
@@ -70,13 +67,13 @@ struct State {
     surface: wgpu::Surface,
     device: wgpu::Device,
     queue: wgpu::Queue,
-    config: wgpu::SurfaceConfiguration,
-    size: winit::dpi::PhysicalSize<u32>,
+    _config: wgpu::SurfaceConfiguration,
+    _size: winit::dpi::PhysicalSize<u32>,
     render_pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
     vertices: Vec<Vertex>,
     array: Vec<u16>,
-    window: Window,
+    _window: Window,
 }
 
 impl State {
@@ -191,12 +188,12 @@ impl State {
         );
 
         Self {
-            window,
+            _window: window,
             surface,
             device,
             queue,
-            config,
-            size,
+            _config: config,
+            _size: size,
             render_pipeline,
             vertex_buffer,
             vertices,
