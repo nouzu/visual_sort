@@ -24,8 +24,9 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import SpeedIcon from '@mui/icons-material/Speed';
 import SwitchAccessShortcutAddIcon from '@mui/icons-material/SwitchAccessShortcutAdd';
+import CallMergeIcon from '@mui/icons-material/CallMerge';
 
-import init, {shuffle, bubble_sort, insertion_sort} from "renderer"
+import init, {shuffle, bubble_sort, insertion_sort, merge_sort} from "renderer"
 
 const App = () => {
   const algorithms = [
@@ -38,6 +39,11 @@ const App = () => {
       title: "Insertion Sort",
       icon: <SwitchAccessShortcutAddIcon/>,
       onClick: () => runAlgorithm(insertion_sort)
+    },
+    {
+      title: "Merge Sort",
+      icon: <CallMergeIcon/>,
+      onClick: () => runAlgorithm(merge_sort)
     }
   ]
 
@@ -50,7 +56,7 @@ const App = () => {
 
   const [initializing, setInitializing] = React.useState(true);
   const [running, setRunning] = React.useState(false);
-  const [speed, setSpeed] = React.useState(1000);
+  const [speed, setSpeed] = React.useState(256);
 
   React.useEffect(() => {
     if (initializing) {
@@ -106,9 +112,9 @@ const App = () => {
               <SpeedIcon sx={{mr: 1}}/>
               <Slider
                 disabled={disabled}
-                min={256}
-                max={2048}
-                defaultValue={1024}
+                min={1}
+                max={512}
+                defaultValue={256}
                 value={speed}
                 onChange={(_, n) => setSpeed(n)}
                 valueLabelDisplay="auto"

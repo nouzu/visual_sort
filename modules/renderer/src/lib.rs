@@ -1,6 +1,7 @@
 #![feature(thread_local)]
 
 use std::cell::RefCell;
+use std::cmp::min;
 use std::rc::Rc;
 use rand::prelude::SliceRandom;
 use rand::thread_rng;
@@ -344,6 +345,75 @@ pub async fn insertion_sort(speed: u16) {
         }
 
         i += 1;
+    }
+
+    request_animation_frame().await;
+
+    state.render_array();
+}
+
+#[wasm_bindgen]
+pub async fn merge_sort(speed: u16) {
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    let mut a = 1;
+    let mut b = 2;
+
+    loop {
+        for c in state.array.chunks_mut(b) {
+            if b < 2 {
+                continue;
+            }
+
+            let mut temp = Vec::with_capacity(c.len());
+
+            {
+                let mid = b / 2;
+
+                let mut lhs = c.iter().take(mid).peekable();
+                let mut rhs = c.iter().skip(mid).peekable();
+
+                while let (Some(&lhs_el), Some(&rhs_el)) = (lhs.peek(), rhs.peek()) {
+                    if *lhs_el <= *rhs_el {
+                        temp.push(*lhs.next().unwrap());
+                    } else {
+                        temp.push(*rhs.next().unwrap());
+                    }
+                }
+
+                for el in lhs {
+                    temp.push(*el);
+                }
+
+                for el in rhs {
+                    temp.push(*el);
+                }
+            }
+
+            for i in 0..temp.len() {
+                c[i] = temp[i];
+
+                mods += 1;
+
+                if mods == speed {
+                    mods = 0;
+
+                    request_animation_frame().await;
+
+                    unsafe { STATE.as_mut().unwrap().render_array() };
+                }
+            }
+        }
+
+        if b > state.array.len() {
+            break;
+        }
+
+        a += 1;
+
+        b = 2f64.powi(a) as usize;
     }
 
     request_animation_frame().await;
