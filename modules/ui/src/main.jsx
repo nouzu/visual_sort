@@ -25,10 +25,24 @@ import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import SpeedIcon from '@mui/icons-material/Speed';
 import SwitchAccessShortcutAddIcon from '@mui/icons-material/SwitchAccessShortcutAdd';
 import CallMergeIcon from '@mui/icons-material/CallMerge';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
-import init, {shuffle, bubble_sort, insertion_sort, merge_sort} from "renderer"
+import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort} from "renderer"
 
 const App = () => {
+  const actions = [
+    {
+      title: "Shuffle",
+      icon: <ShuffleIcon/>,
+      onClick: () => shuffle()
+    },
+    {
+      title: "Reverse",
+      icon: <SettingsBackupRestoreIcon/>,
+      onClick: () => reverse()
+    }
+  ];
+
   const algorithms = [
     {
       title: "Bubble Sort",
@@ -75,16 +89,18 @@ const App = () => {
         </Box>
         <Box component="aside" sx={{width: 300, height: 600}}>
           <List subheader={<ListSubheader>Actions</ListSubheader>}>
-            <ListItem sx={{p: 0}}>
-              <ListItemButton disabled={disabled} onClick={() => shuffle()}>
-                <ListItemIcon>
-                  <ShuffleIcon/>
-                </ListItemIcon>
-                <ListItemText>
-                  Shuffle
-                </ListItemText>
-              </ListItemButton>
-            </ListItem>
+            {actions.map((action) => (
+              <ListItem key={action.title} sx={{p: 0}}>
+                <ListItemButton disabled={disabled} onClick={action.onClick}>
+                  <ListItemIcon>
+                    {action.icon}
+                  </ListItemIcon>
+                  <ListItemText>
+                    {action.title}
+                  </ListItemText>
+                </ListItemButton>
+              </ListItem>
+            ))}
           </List>
           <Divider/>
           <List>

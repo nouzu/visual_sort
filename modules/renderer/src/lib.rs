@@ -277,6 +277,13 @@ pub fn shuffle() {
     state.render_array();
 }
 
+#[wasm_bindgen]
+pub fn reverse() {
+    let state = unsafe { STATE.as_mut().unwrap() };
+    state.array.reverse();
+    state.render_array();
+}
+
 async fn request_animation_frame() {
     let (s, r) = oneshot::channel();
 
