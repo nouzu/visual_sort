@@ -1,0 +1,11 @@
+[workspace]
+members = [
+  "./modules/renderer",
+  "./modules/ui/src-tauri"
+]
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
+panic = "abort"
