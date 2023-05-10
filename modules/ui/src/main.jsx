@@ -23,10 +23,9 @@ import Slider from "@mui/material/Slider"
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import SpeedIcon from '@mui/icons-material/Speed';
-import BubbleChartOutlinedIcon from '@mui/icons-material/BubbleChartOutlined';
 import SwitchAccessShortcutAddIcon from '@mui/icons-material/SwitchAccessShortcutAdd';
 
-import init, {shuffle, bubble_sort, bi_bubble_sort, insertion_sort} from "renderer"
+import init, {shuffle, bubble_sort, insertion_sort} from "renderer"
 
 const App = () => {
   const algorithms = [
@@ -34,11 +33,6 @@ const App = () => {
       title: "Bubble Sort",
       icon: <BubbleChartIcon/>,
       onClick: () => runAlgorithm(bubble_sort),
-    },
-    {
-      title: "BiBubble Sort",
-      icon: <BubbleChartOutlinedIcon/>,
-      onClick: () => runAlgorithm(bi_bubble_sort),
     },
     {
       title: "Insertion Sort",
