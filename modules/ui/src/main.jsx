@@ -26,8 +26,9 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import SwitchAccessShortcutAddIcon from '@mui/icons-material/SwitchAccessShortcutAdd';
 import CallMergeIcon from '@mui/icons-material/CallMerge';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 
-import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort} from "renderer"
+import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort, quick_sort} from "renderer"
 
 const App = () => {
   const actions = [
@@ -58,6 +59,11 @@ const App = () => {
       title: "Merge Sort",
       icon: <CallMergeIcon/>,
       onClick: () => runAlgorithm(merge_sort)
+    },
+    {
+      title: "Quick Sort",
+      icon: <ElectricBoltIcon/>,
+      onClick: () => runAlgorithm(quick_sort)
     }
   ]
 
@@ -70,7 +76,7 @@ const App = () => {
 
   const [initializing, setInitializing] = React.useState(true);
   const [running, setRunning] = React.useState(false);
-  const [speed, setSpeed] = React.useState(256);
+  const [speed, setSpeed] = React.useState(128);
 
   React.useEffect(() => {
     if (initializing) {
@@ -129,8 +135,8 @@ const App = () => {
               <Slider
                 disabled={disabled}
                 min={1}
-                max={512}
-                defaultValue={256}
+                max={256}
+                defaultValue={128}
                 value={speed}
                 onChange={(_, n) => setSpeed(n)}
                 valueLabelDisplay="auto"

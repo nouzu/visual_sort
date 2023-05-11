@@ -424,3 +424,66 @@ pub async fn merge_sort(speed: u16) {
 
     state.render_array();
 }
+
+#[wasm_bindgen]
+pub async fn quick_sort(speed: u16) {
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    macro_rules! on_mod {
+        () => {
+            mods += 1;
+
+            if mods == speed {
+                mods = 0;
+
+                request_animation_frame().await;
+
+                state.render_array();
+            }
+        };
+    }
+
+    let mut stack = Vec::with_capacity(state.array.len());
+
+    stack.push(0);
+    stack.push(state.array.len() - 1);
+
+    while !stack.is_empty() {
+        let h = stack.pop().unwrap();
+        let l = stack.pop().unwrap();
+
+        let mut i = l;
+
+        let pivot = state.array[h];
+
+        for j in l..h {
+            if state.array[j] <= pivot {
+                state.array.swap(i, j);
+
+                i += 1;
+
+                on_mod!();
+            }
+        }
+
+        state.array.swap(i, h);
+
+        on_mod!();
+
+        if i > 0 && i - 1 > l {
+            stack.push(l);
+            stack.push(i - 1);
+        }
+
+        if i + 1 < h {
+            stack.push(i + 1);
+            stack.push(h);
+        }
+    }
+
+    request_animation_frame().await;
+
+    state.render_array();
+}
