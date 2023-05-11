@@ -292,6 +292,20 @@ async fn request_animation_frame() {
     r.await.unwrap();
 }
 
+macro_rules! on_mod {
+    ($mods:ident, $speed:ident) => {
+        $mods += 1;
+
+        if $mods == $speed {
+            $mods = 0;
+
+            request_animation_frame().await;
+
+            unsafe { STATE.as_mut().unwrap().render_array() };
+        }
+    };
+}
+
 #[wasm_bindgen]
 pub async fn bubble_sort(speed: u16) {
     let state = unsafe { STATE.as_mut().unwrap() };
@@ -303,15 +317,7 @@ pub async fn bubble_sort(speed: u16) {
             if state.array[j] > state.array[j + 1] {
                 state.array.swap(j, j + 1);
 
-                mods += 1;
-
-                if mods == speed {
-                    mods = 0;
-
-                    request_animation_frame().await;
-
-                    state.render_array();
-                }
+                on_mod!(mods, speed);
             }
         }
     }
@@ -337,15 +343,7 @@ pub async fn insertion_sort(speed: u16) {
 
             j -= 1;
 
-            mods += 1;
-
-            if mods == speed {
-                mods = 0;
-
-                request_animation_frame().await;
-
-                state.render_array();
-            }
+            on_mod!(mods, speed);
         }
 
         i += 1;
@@ -399,15 +397,7 @@ pub async fn merge_sort(speed: u16) {
             for i in 0..temp.len() {
                 c[i] = temp[i];
 
-                mods += 1;
-
-                if mods == speed {
-                    mods = 0;
-
-                    request_animation_frame().await;
-
-                    unsafe { STATE.as_mut().unwrap().render_array() };
-                }
+                on_mod!(mods, speed);
             }
         }
 
@@ -431,20 +421,6 @@ pub async fn quick_sort(speed: u16) {
 
     let mut mods = 0;
 
-    macro_rules! on_mod {
-        () => {
-            mods += 1;
-
-            if mods == speed {
-                mods = 0;
-
-                request_animation_frame().await;
-
-                state.render_array();
-            }
-        };
-    }
-
     let mut stack = Vec::with_capacity(state.array.len());
 
     stack.push(0);
@@ -464,13 +440,13 @@ pub async fn quick_sort(speed: u16) {
 
                 i += 1;
 
-                on_mod!();
+                on_mod!(mods, speed);
             }
         }
 
         state.array.swap(i, h);
 
-        on_mod!();
+        on_mod!(mods, speed);
 
         if i > 0 && i - 1 > l {
             stack.push(l);
@@ -529,15 +505,7 @@ pub async fn shell_sort(speed: u16) {
 
                 j -= gap;
 
-                mods += 1;
-
-                if mods == speed {
-                    mods = 0;
-
-                    request_animation_frame().await;
-
-                    state.render_array();
-                }
+                on_mod!(mods, speed);
             }
         }
     }
@@ -565,15 +533,7 @@ pub async fn selection_sort(speed: u16) {
         if min != i {
             state.array.swap(i, min);
 
-            mods += 1;
-
-            if mods == speed {
-                mods = 0;
-
-                request_animation_frame().await;
-
-                state.render_array();
-            }
+            on_mod!(mods, speed);
         }
     }
 
@@ -588,20 +548,6 @@ pub async fn cocktail_sort(speed: u16) {
 
     let mut mods = 0;
 
-    macro_rules! on_mod {
-        () => {
-            mods += 1;
-
-            if mods == speed {
-                mods = 0;
-
-                request_animation_frame().await;
-
-                state.render_array();
-            }
-        };
-    }
-
     let mut begin = 0;
 
     let mut end = state.array.len() - 1;
@@ -615,7 +561,7 @@ pub async fn cocktail_sort(speed: u16) {
             if state.array[i] > state.array[i + 1] {
                 state.array.swap(i, i + 1);
 
-                on_mod!();
+                on_mod!(mods, speed);
 
                 end = i;
             }
@@ -629,7 +575,7 @@ pub async fn cocktail_sort(speed: u16) {
             if state.array[i] > state.array[i + 1] {
                 state.array.swap(i, i + 1);
 
-                on_mod!();
+                on_mod!(mods, speed);
 
                 begin = i;
             }
