@@ -487,3 +487,62 @@ pub async fn quick_sort(speed: u16) {
 
     state.render_array();
 }
+
+#[wasm_bindgen]
+pub async fn shell_sort(speed: u16) {
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    struct GapSequence {
+        gap: usize,
+    }
+
+    impl GapSequence {
+        fn new(n: usize) -> Self {
+            Self { gap: n }
+        }
+    }
+
+    impl Iterator for GapSequence {
+        type Item = usize;
+
+        fn next(&mut self) -> Option<usize> {
+            self.gap /= 2;
+
+            if self.gap > 0 {
+                Some(self.gap)
+            } else {
+                None
+            }
+        }
+    }
+
+    let gaps = GapSequence::new(state.array.len());
+
+    for gap in gaps {
+        for i in gap..state.array.len() {
+            let mut j = i;
+
+            while j >= gap && state.array[j - gap] > state.array[j] {
+                state.array.swap(j - gap, j);
+
+                j -= gap;
+
+                mods += 1;
+
+                if mods == speed {
+                    mods = 0;
+
+                    request_animation_frame().await;
+
+                    state.render_array();
+                }
+            }
+        }
+    }
+
+    request_animation_frame().await;
+
+    state.render_array();
+}

@@ -27,8 +27,9 @@ import SwitchAccessShortcutAddIcon from '@mui/icons-material/SwitchAccessShortcu
 import CallMergeIcon from '@mui/icons-material/CallMerge';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
+import SpaceBarIcon from '@mui/icons-material/SpaceBar';
 
-import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort, quick_sort} from "renderer"
+import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort, quick_sort, shell_sort} from "renderer"
 
 const App = () => {
   const actions = [
@@ -64,6 +65,11 @@ const App = () => {
       title: "Quick Sort",
       icon: <ElectricBoltIcon/>,
       onClick: () => runAlgorithm(quick_sort)
+    },
+    {
+      title: "Shell Sort",
+      icon: <SpaceBarIcon/>,
+      onClick: () => runAlgorithm(shell_sort)
     }
   ]
 
