@@ -18,7 +18,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListSubheader from "@mui/material/ListSubheader";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
-import Slider from "@mui/material/Slider"
+import Slider from "@mui/material/Slider";
+import Typography from "@mui/material/Typography";
 
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
@@ -28,8 +29,10 @@ import CallMergeIcon from '@mui/icons-material/CallMerge';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import SpaceBarIcon from '@mui/icons-material/SpaceBar';
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 
-import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort, quick_sort, shell_sort} from "renderer"
+import init, {shuffle, reverse, bubble_sort, insertion_sort, merge_sort, quick_sort, shell_sort, selection_sort, cocktail_sort} from "renderer"
 
 const App = () => {
   const actions = [
@@ -52,6 +55,11 @@ const App = () => {
       onClick: () => runAlgorithm(bubble_sort),
     },
     {
+      title: "Cocktail Sort",
+      icon: <LocalBarIcon/>,
+      onClick: () => runAlgorithm(cocktail_sort)
+    },
+    {
       title: "Insertion Sort",
       icon: <SwitchAccessShortcutAddIcon/>,
       onClick: () => runAlgorithm(insertion_sort)
@@ -70,6 +78,11 @@ const App = () => {
       title: "Shell Sort",
       icon: <SpaceBarIcon/>,
       onClick: () => runAlgorithm(shell_sort)
+    },
+    {
+      title: "Selection Sort",
+      icon: <RadioButtonCheckedIcon/>,
+      onClick: () => runAlgorithm(selection_sort)
     }
   ]
 
@@ -130,7 +143,7 @@ const App = () => {
             ))}
           </List>
           <Divider/>
-          <Box sx={{m: 2}}>
+          <Stack spacing={2} sx={{m: 2,textAlign:"center"}}>
             <Stack
               spacing={2}
               direction="row"
@@ -148,7 +161,10 @@ const App = () => {
                 valueLabelDisplay="auto"
               />
             </Stack>
-          </Box>
+            <Typography variant="subtitle2">
+              All algorithms are iterative.
+            </Typography>
+          </Stack>
         </Box>
       </Box>
     </React.StrictMode>

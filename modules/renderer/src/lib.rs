@@ -546,3 +546,97 @@ pub async fn shell_sort(speed: u16) {
 
     state.render_array();
 }
+
+#[wasm_bindgen]
+pub async fn selection_sort(speed: u16) {
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    for i in 0..state.array.len() - 1 {
+        let mut min = i;
+
+        for j in i + 1..state.array.len() {
+            if state.array[j] < state.array[min] {
+                min = j
+            }
+        }
+
+        if min != i {
+            state.array.swap(i, min);
+
+            mods += 1;
+
+            if mods == speed {
+                mods = 0;
+
+                request_animation_frame().await;
+
+                state.render_array();
+            }
+        }
+    }
+
+    request_animation_frame().await;
+
+    state.render_array();
+}
+
+#[wasm_bindgen]
+pub async fn cocktail_sort(speed: u16) {
+    let state = unsafe { STATE.as_mut().unwrap() };
+
+    let mut mods = 0;
+
+    macro_rules! on_mod {
+        () => {
+            mods += 1;
+
+            if mods == speed {
+                mods = 0;
+
+                request_animation_frame().await;
+
+                state.render_array();
+            }
+        };
+    }
+
+    let mut begin = 0;
+
+    let mut end = state.array.len() - 1;
+
+    while begin < end {
+        let range = begin..end;
+
+        end = begin;
+
+        for i in range {
+            if state.array[i] > state.array[i + 1] {
+                state.array.swap(i, i + 1);
+
+                on_mod!();
+
+                end = i;
+            }
+        }
+
+        let range = (begin..end).rev();
+
+        begin = end;
+
+        for i in range {
+            if state.array[i] > state.array[i + 1] {
+                state.array.swap(i, i + 1);
+
+                on_mod!();
+
+                begin = i;
+            }
+        }
+    }
+
+    request_animation_frame().await;
+
+    state.render_array();
+}
