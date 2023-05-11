@@ -1,9 +1,9 @@
 body {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: hidden;
 }
 
 body::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
